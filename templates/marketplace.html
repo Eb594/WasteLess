@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Food Marketplace | WasteLess</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/marketplace" class="nav-button">Marketplace</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="marketplace-hero">
+
+            <p class="eyebrow">GOOD FOOD. BETTER PRICES.</p>
+
+            <h1>
+                Discover food.<br>
+                <span>Waste less.</span>
+            </h1>
+
+            <p>
+                Find discounted surplus food from local vendors
+                and save money while helping reduce food waste.
+            </p>
+
+        </section>
+
+
+        <section class="marketplace-container">
+
+            <div class="marketplace-heading">
+                <div>
+                    <h2>Available Food</h2>
+
+                    <p>
+                        Explore our sample surplus food listings.
+                    </p>
+                </div>
+
+                <span class="listing-count">
+                    {{ food_listings|length }} listings
+                </span>
+            </div>
+
+
+            <form
+                action="{{ url_for('marketplace') }}"
+                method="GET"
+                class="search-form"
+            >
+
+                <input
+                    type="search"
+                    name="search"
+                    placeholder="Search food or location..."
+                    value="{{ search_query }}"
+                    aria-label="Search food or location"
+                >
+
+                <select
+                    name="category"
+                    aria-label="Filter by food category"
+                >
+
+                    <option value="">All Categories</option>
+
+                    {% for category in categories %}
+
+                        <option
+                            value="{{ category }}"
+                            {% if selected_category == category %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ category }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit" class="primary-button">
+                    Search
+                </button>
+
+                <a
+                    href="{{ url_for('marketplace') }}"
+                    class="reset-button"
+                >
+                    Reset
+                </a>
+
+            </form>
+
+
+            {% if food_listings %}
+
+                <div class="food-grid">
+
+                    {% for food in food_listings %}
+
+                        <article class="market-food-card">
+
+                            <div class="market-food-image">
+
+                                <span class="food-emoji">
+                                    {{ food.emoji }}
+                                </span>
+
+                                <span class="discount-badge">
+                                    {{ food.discount_percentage }}% OFF
+                                </span>
+
+                            </div>
+
+
+                            <div class="market-food-content">
+
+                                <span class="category-label">
+                                    {{ food.category }}
+                                </span>
+
+                                <h3>{{ food.name }}</h3>
+
+                                <p class="market-food-description">
+                                    {{ food.description }}
+                                </p>
+
+
+                                <div class="price-row">
+
+                                    <span class="market-old-price">
+                                        ₦{{ "{:,.0f}".format(food.original_price) }}
+                                    </span>
+
+                                    <strong>
+                                        ₦{{ "{:,.0f}".format(food.discounted_price) }}
+                                    </strong>
+
+                                </div>
+
+
+                                <p class="saving-message">
+                                    You save
+                                    ₦{{ "{:,.0f}".format(
+                                        food.original_price
+                                        - food.discounted_price
+                                    ) }}
+                                </p>
+
+
+                                <div class="food-meta">
+
+                                    <p>
+                                        📍 {{ food.location }}
+                                    </p>
+
+                                    <p>
+                                        🕒 Collect by
+                                        {{ food.collection_deadline }}
+                                    </p>
+
+                                    <p>
+                                        📦 {{ food.quantity }} available
+                                    </p>
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    class="reserve-button"
+                                    disabled
+                                    title="Reservations are coming in a later development stage."
+                                >
+                                    Reservations Coming Soon
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div>🔎</div>
+
+                    <h3>No food found</h3>
+
+                    <p>
+                        Try another search term or select a different
+                        category.
+                    </p>
+
+                    <a
+                        href="{{ url_for('marketplace') }}"
+                        class="primary-button"
+                    >
+                        View All Food
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <p>Save Food. Save Money. Make a Difference.</p>
+
+        <p class="footer-note">
+            WasteLess &copy; 2026. Built for a better tomorrow.
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

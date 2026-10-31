@@ -15,17 +15,23 @@
 
 <body>
 
+    <!-- Navigation -->
     <header class="navbar">
+
         <a href="/" class="logo">WasteLess<span>.</span></a>
 
         <nav>
             <a href="/">Home</a>
-            <a href="/marketplace" class="nav-button">Marketplace</a>
+            <a href="/marketplace">Marketplace</a>
+            <a href="/add-food" class="nav-button">List Surplus Food</a>
+            <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
         </nav>
+
     </header>
 
     <main>
 
+        <!-- Marketplace Hero -->
         <section class="marketplace-hero">
 
             <p class="eyebrow">GOOD FOOD. BETTER PRICES.</p>
@@ -43,23 +49,27 @@
         </section>
 
 
+        <!-- Marketplace Listings -->
         <section class="marketplace-container">
 
             <div class="marketplace-heading">
+
                 <div>
                     <h2>Available Food</h2>
 
                     <p>
-                        Explore our sample surplus food listings.
+                        Explore surplus food listings from local vendors.
                     </p>
                 </div>
 
                 <span class="listing-count">
                     {{ food_listings|length }} listings
                 </span>
+
             </div>
 
 
+            <!-- Search and Filter Form -->
             <form
                 action="{{ url_for('marketplace') }}"
                 method="GET"
@@ -74,10 +84,8 @@
                     aria-label="Search food or location"
                 >
 
-                <select
-                    name="category"
-                    aria-label="Filter by food category"
-                >
+                <!-- Category Filter -->
+                <select name="category" aria-label="Filter by category">
 
                     <option value="">All Categories</option>
 
@@ -85,9 +93,7 @@
 
                         <option
                             value="{{ category }}"
-                            {% if selected_category == category %}
-                                selected
-                            {% endif %}
+                            {% if selected_category == category %}selected{% endif %}
                         >
                             {{ category }}
                         </option>
@@ -95,6 +101,26 @@
                     {% endfor %}
 
                 </select>
+
+
+                <!-- Location Filter -->
+                <select name="location" aria-label="Filter by location">
+
+                    <option value="">All Locations</option>
+
+                    {% for location in locations %}
+
+                        <option
+                            value="{{ location }}"
+                            {% if selected_location == location %}selected{% endif %}
+                        >
+                            {{ location }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
 
                 <button type="submit" class="primary-button">
                     Search
@@ -110,6 +136,7 @@
             </form>
 
 
+            <!-- Food Listings -->
             {% if food_listings %}
 
                 <div class="food-grid">
@@ -118,6 +145,7 @@
 
                         <article class="market-food-card">
 
+                            <!-- Food Image -->
                             <div class="market-food-image">
 
                                 <span class="food-emoji">
@@ -131,6 +159,7 @@
                             </div>
 
 
+                            <!-- Food Details -->
                             <div class="market-food-content">
 
                                 <span class="category-label">
@@ -139,19 +168,20 @@
 
                                 <h3>{{ food.name }}</h3>
 
-                                <p class="market-food-description">
+                                <p class="food-description">
                                     {{ food.description }}
                                 </p>
 
 
+                                <!-- Prices -->
                                 <div class="price-row">
 
                                     <span class="market-old-price">
-                                        ₦{{ "{:,.0f}".format(food.original_price) }}
+                                        ₦{{ "{:,.2f}".format(food.original_price) }}
                                     </span>
 
                                     <strong>
-                                        ₦{{ "{:,.0f}".format(food.discounted_price) }}
+                                        ₦{{ "{:,.2f}".format(food.discounted_price) }}
                                     </strong>
 
                                 </div>
@@ -159,13 +189,11 @@
 
                                 <p class="saving-message">
                                     You save
-                                    ₦{{ "{:,.0f}".format(
-                                        food.original_price
-                                        - food.discounted_price
-                                    ) }}
+                                    ₦{{ "{:,.2f}".format(food.original_price - food.discounted_price) }}
                                 </p>
 
 
+                                <!-- Food Information -->
                                 <div class="food-meta">
 
                                     <p>
@@ -173,8 +201,7 @@
                                     </p>
 
                                     <p>
-                                        🕒 Collect by
-                                        {{ food.collection_deadline }}
+                                        🕒 Collect before {{ food.collection_deadline }}
                                     </p>
 
                                     <p>
@@ -184,15 +211,13 @@
                                 </div>
 
 
-                                <button
-                                    type="button"
-                                    class="reserve-button"
-                                    disabled
-                                    title="Reservations are coming in a later development stage."
-                                >
-                                    Reservations Coming Soon
-                                </button>
-
+                                <!-- Reservation Button -->
+                                <a
+    href="{{ url_for('reserve_food', food_id=food.id) }}"
+    class="reserve-button"
+>
+    Reserve Food
+</a>
                             </div>
 
                         </article>
@@ -203,22 +228,18 @@
 
             {% else %}
 
+                <!-- Empty State -->
                 <div class="empty-state">
-
-                    <div>🔎</div>
 
                     <h3>No food found</h3>
 
                     <p>
-                        Try another search term or select a different
-                        category.
+                        We couldn't find any food matching your search.
+                        Try another search or change your filters.
                     </p>
 
-                    <a
-                        href="{{ url_for('marketplace') }}"
-                        class="primary-button"
-                    >
-                        View All Food
+                    <a href="{{ url_for('marketplace') }}">
+                        View all available food
                     </a>
 
                 </div>
@@ -230,14 +251,23 @@
     </main>
 
 
-    <footer>
+    <!-- Footer -->
+    <footer class="footer">
 
-        <a href="/" class="logo">WasteLess<span>.</span></a>
+        <div class="footer-content">
 
-        <p>Save Food. Save Money. Make a Difference.</p>
+            <a href="/" class="logo">
+                WasteLess<span>.</span>
+            </a>
 
-        <p class="footer-note">
-            WasteLess &copy; 2026. Built for a better tomorrow.
+            <p>
+                Save Food. Save Money. Make a Difference.
+            </p>
+
+        </div>
+
+        <p class="copyright">
+            &copy; 2026 WasteLess. All rights reserved.
         </p>
 
     </footer>

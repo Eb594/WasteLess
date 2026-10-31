@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>List Surplus Food | WasteLess</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/marketplace">Marketplace</a>
+            <a href="/add-food" class="nav-button">List Surplus Food</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="form-hero">
+            <p class="eyebrow">GIVE GOOD FOOD A SECOND CHANCE</p>
+
+            <h1>List Your <span>Surplus Food.</span></h1>
+
+            <p>
+                Share your available surplus food with customers
+                and help reduce food waste.
+            </p>
+        </section>
+
+        <section class="form-container">
+
+            <div class="form-heading">
+                <h2>Food Listing Details</h2>
+                <p>Complete the information below to list your food.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="form-alert {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('add_food') }}">
+
+                <div class="form-group">
+                    <label for="name">Food Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="e.g. Fresh Bakery Bread"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Food Category</label>
+
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Bakery">Bakery</option>
+                        <option value="Fruits & Vegetables">
+                            Fruits & Vegetables
+                        </option>
+                        <option value="Prepared Meals">
+                            Prepared Meals
+                        </option>
+                        <option value="Dairy">Dairy</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Food Description</label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                        placeholder="Describe the food you are selling..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="original_price">
+                            Original Price (₦)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="original_price"
+                            name="original_price"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="2000"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discounted_price">
+                            Discounted Price (₦)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="discounted_price"
+                            name="discounted_price"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="1200"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Available Quantity</label>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="1"
+                        step="1"
+                        placeholder="15"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="e.g. Yaba, Lagos"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="collection_deadline">
+                        Collection Deadline
+                    </label>
+
+                    <input
+                        type="text"
+                        id="collection_deadline"
+                        name="collection_deadline"
+                        placeholder="e.g. 7:00 PM"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="submit-listing-button">
+                    Publish Food Listing
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <p>Save Food. Save Money. Make a Difference.</p>
+
+        <p class="footer-note">
+            WasteLess &copy; 2026. Built for a better tomorrow.
+        </p>
+    </footer>
+
+</body>
+
+</html>

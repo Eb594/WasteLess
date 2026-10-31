@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reservation Confirmed | WasteLess</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/marketplace">Marketplace</a>
+            <a href="/add-food" class="nav-button">List Surplus Food</a>
+        </nav>
+
+    </header>
+
+
+    <!-- Confirmation Section -->
+    <main class="confirmation-container">
+
+        <div class="confirmation-icon">
+            ✓
+        </div>
+
+        <p class="eyebrow">RESERVATION SUCCESSFUL</p>
+
+        <h1>Your food is <span>reserved!</span></h1>
+
+        <p class="confirmation-message">
+            Thank you for choosing WasteLess.
+            Your reservation has been saved successfully.
+        </p>
+
+
+        <!-- Reservation Receipt -->
+        <section class="reservation-receipt">
+
+            <div class="receipt-header">
+
+                <h2>Reservation Receipt</h2>
+
+                <span class="reservation-status">
+                    {{ reservation.status }}
+                </span>
+
+            </div>
+
+
+            <div class="receipt-number">
+
+                <span>Reservation Number</span>
+
+                <strong>
+                    WL-{{ "%05d"|format(reservation.id) }}
+                </strong>
+
+            </div>
+
+
+            <div class="receipt-details">
+
+                <div>
+                    <span>Customer Name</span>
+                    <strong>{{ reservation.customer_name }}</strong>
+                </div>
+
+                <div>
+                    <span>Phone Number</span>
+                    <strong>{{ reservation.phone_number }}</strong>
+                </div>
+
+                <div>
+                    <span>Food Item</span>
+                    <strong>{{ reservation.food_name }}</strong>
+                </div>
+
+                <div>
+                    <span>Quantity Reserved</span>
+                    <strong>{{ reservation.quantity }} portions</strong>
+                </div>
+
+                <div>
+                    <span>Collection Location</span>
+                    <strong>{{ reservation.location }}</strong>
+                </div>
+
+                <div>
+                    <span>Collection Deadline</span>
+                    <strong>{{ reservation.collection_deadline }}</strong>
+                </div>
+
+                <div class="receipt-total">
+                    <span>Total Amount</span>
+
+                    <strong>
+                        ₦{{ "{:,.2f}".format(reservation.total_price) }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <p class="receipt-note">
+                Please contact the vendor using your reservation
+                details to arrange collection. Payment is not processed
+                through WasteLess yet.
+            </p>
+
+        </section>
+
+
+        <a href="{{ url_for('marketplace') }}" class="primary-button confirmation-button">
+            Continue Shopping
+        </a>
+
+        <a href="{{ url_for('home') }}" class="back-link">
+            Return to Homepage
+        </a>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <div class="footer-content">
+
+            <a href="/" class="logo">
+                WasteLess<span>.</span>
+            </a>
+
+            <p>
+                Save Food. Save Money. Make a Difference.
+            </p>
+
+        </div>
+
+        <p class="copyright">
+            &copy; 2026 WasteLess. All rights reserved.
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

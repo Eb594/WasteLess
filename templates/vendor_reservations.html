@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Reservations | WasteLess</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="logo">WasteLess.</a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('marketplace') }}">Marketplace</a>
+            <a href="{{ url_for('add_food') }}">List Surplus Food</a>
+            <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
+        </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <section class="vendor-dashboard">
+
+        <div class="dashboard-heading">
+            <p class="section-label">VENDOR DASHBOARD</p>
+            <h1>Food <span>Reservations</span></h1>
+            <p>Keep track of customers who have reserved your surplus food.</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if reservations %}
+
+            <div class="reservation-table-wrapper">
+                <table class="reservation-table">
+
+                    <thead>
+                        <tr>
+                            <th>Reservation</th>
+                            <th>Customer</th>
+                            <th>Food</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for reservation in reservations %}
+                            <tr>
+                                <td>
+                                    WL-{{ "%05d"|format(reservation.id) }}
+                                </td>
+
+                                <td>
+                                    <strong>{{ reservation.customer_name }}</strong>
+                                    <small>{{ reservation.phone_number }}</small>
+                                </td>
+
+                                <td>{{ reservation.food_name }}</td>
+
+                                <td>{{ reservation.quantity }}</td>
+
+                                <td>
+                                    ₦{{ "%.2f"|format(reservation.total_price) }}
+                                </td>
+
+                                <td>
+                                    <span class="reservation-status">
+                                        {{ reservation.status }}
+                                    </span>
+                                </td>
+
+                                <td>
+    <form
+        action="{{ url_for('update_reservation', reservation_id=reservation.id) }}"
+        method="POST"
+    >
+        <select name="status" required
+                style="padding: 10px; margin-right: 8px;">
+            <option value="Pending"
+                {% if reservation.status == 'Pending' %}selected{% endif %}>
+                Pending
+            </option>
+
+            <option value="Confirmed"
+                {% if reservation.status == 'Confirmed' %}selected{% endif %}>
+                Confirmed
+            </option>
+
+            <option value="Collected"
+                {% if reservation.status == 'Collected' %}selected{% endif %}>
+                Collected
+            </option>
+        </select>
+
+        <button type="submit"
+                style="display: inline-block !important;
+                       background: #246b45 !important;
+                       color: white !important;
+                       padding: 10px 15px !important;
+                       border: none !important;
+                       border-radius: 6px !important;
+                       cursor: pointer !important;">
+            Update
+        </button>
+    </form>
+</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        {% else %}
+
+            <div class="empty-reservations">
+                <h2>No reservations yet</h2>
+                <p>When customers reserve food, their details will appear here.</p>
+                <a href="{{ url_for('marketplace') }}" class="primary-button">
+                    View Marketplace
+                </a>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reserve Food | WasteLess</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <a href="/" class="logo">WasteLess<span>.</span></a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/marketplace">Marketplace</a>
+            <a href="/add-food" class="nav-button">List Surplus Food</a>
+        </nav>
+
+    </header>
+
+
+    <!-- Page Heading -->
+    <section class="form-hero">
+
+        <p class="eyebrow">SAVE FOOD. MAKE A RESERVATION.</p>
+
+        <h1>
+            Reserve your <span>food.</span>
+        </h1>
+
+        <p>
+            Complete the form below to reserve your selected food.
+        </p>
+
+    </section>
+
+
+    <!-- Reservation Form -->
+    <main class="form-container">
+
+        <div class="form-heading">
+
+            <h2>Reservation Details</h2>
+
+            <p>Please provide your contact information.</p>
+
+        </div>
+
+
+        <!-- Display Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% for category, message in messages %}
+
+                <div class="form-alert {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <!-- Selected Food -->
+        <div class="reservation-food">
+
+            <span class="food-emoji">
+                {{ food.emoji }}
+            </span>
+
+            <div>
+                <h3>{{ food.name }}</h3>
+
+                <p>{{ food.category }}</p>
+
+                <strong>
+                    ₦{{ "{:,.2f}".format(food.discounted_price) }}
+                    per portion
+                </strong>
+
+                <p>
+                    {{ food.quantity }} portions available
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Customer Form -->
+        <form method="POST">
+
+            <div class="form-group">
+
+                <label for="customer_name">Full Name</label>
+
+                <input
+                    type="text"
+                    id="customer_name"
+                    name="customer_name"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="phone_number">Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="phone_number"
+                    name="phone_number"
+                    placeholder="e.g. 08012345678"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="quantity">Number of Portions</label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="1"
+                    max="{{ food.quantity }}"
+                    value="1"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit-listing-button"
+            >
+                Confirm Reservation
+            </button>
+
+        </form>
+
+
+        <p class="reservation-note">
+            Your reservation will reduce the available food quantity.
+        </p>
+
+
+        <a href="{{ url_for('marketplace') }}" class="back-link">
+            ← Back to Marketplace
+        </a>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <div class="footer-content">
+
+            <a href="/" class="logo">
+                WasteLess<span>.</span>
+            </a>
+
+            <p>
+                Save Food. Save Money. Make a Difference.
+            </p>
+
+        </div>
+
+        <p class="copyright">
+            &copy; 2026 WasteLess. All rights reserved.
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

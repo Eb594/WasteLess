@@ -1,5 +1,8 @@
 import sqlite3
 import re
+import secrets
+import hashlib
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from functools import wraps
 
@@ -109,6 +112,19 @@ def initialize_database():
             status TEXT NOT NULL DEFAULT 'Pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (food_id) REFERENCES food_listings(id)
+        )
+    """)
+
+    # Temporary password-reset tokens. Only token hashes are stored.
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            vendor_id INTEGER NOT NULL,
+            token_hash TEXT NOT NULL UNIQUE,
+            expires_at TEXT NOT NULL,
+            used_at TEXT DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (vendor_id) REFERENCES vendors(id)
         )
     """)
 
@@ -286,6 +302,189 @@ def vendor_logout():
     flash("You have logged out successfully.", "success")
 
     return redirect(url_for("vendor_login"))
+
+
+# =====================================
+# FORGOT VENDOR PASSWORD
+# =====================================
+
+@app.route("/vendor/forgot-password", methods=["GET", "POST"])
+def vendor_forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form.get("email", "").strip().lower()
+
+        if not email:
+            flash("Please enter your account email address.", "error")
+            return redirect(url_for("vendor_forgot_password"))
+
+        connection = get_db_connection()
+
+        vendor = connection.execute("""
+            SELECT id FROM vendors
+            WHERE email = ?
+        """, (email,)).fetchone()
+
+        # Use the same response whether or not the account exists.
+        flash(
+            "If an account exists for that email, a reset link has been "
+            "generated. During local development, check your Flask terminal.",
+            "success"
+        )
+
+        if vendor:
+            raw_token = secrets.token_urlsafe(32)
+            token_hash = hashlib.sha256(
+                raw_token.encode("utf-8")
+            ).hexdigest()
+
+            expires_at = (
+                datetime.now(timezone.utc) + timedelta(minutes=15)
+            ).isoformat()
+
+            # Invalidate any previous unused reset links for this vendor.
+            connection.execute("""
+                UPDATE password_reset_tokens
+                SET used_at = ?
+                WHERE vendor_id = ? AND used_at IS NULL
+            """, (datetime.now(timezone.utc).isoformat(), vendor["id"]))
+
+            connection.execute("""
+                INSERT INTO password_reset_tokens (
+                    vendor_id, token_hash, expires_at
+                )
+                VALUES (?, ?, ?)
+            """, (vendor["id"], token_hash, expires_at))
+
+            connection.commit()
+
+            reset_link = url_for(
+                "vendor_reset_password",
+                token=raw_token,
+                _external=True
+            )
+
+            # Development only: an email service will replace this later.
+            app.logger.warning(
+                "LOCAL DEVELOPMENT password reset link: %s",
+                reset_link
+            )
+
+        connection.close()
+        return redirect(url_for("vendor_forgot_password"))
+
+    return render_template("vendor_forgot_password.html")
+
+
+# =====================================
+# RESET VENDOR PASSWORD
+# =====================================
+
+@app.route("/vendor/reset-password/<token>", methods=["GET", "POST"])
+def vendor_reset_password(token):
+
+    token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    now = datetime.now(timezone.utc).isoformat()
+
+    connection = get_db_connection()
+
+    reset_record = connection.execute("""
+        SELECT id, vendor_id
+        FROM password_reset_tokens
+        WHERE token_hash = ?
+          AND used_at IS NULL
+          AND expires_at > ?
+    """, (token_hash, now)).fetchone()
+
+    if reset_record is None:
+        connection.close()
+        flash(
+            "This password reset link is invalid, expired, or already used. "
+            "Please request a new one.",
+            "error"
+        )
+        return redirect(url_for("vendor_forgot_password"))
+
+    if request.method == "POST":
+
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if len(password) < 8:
+            connection.close()
+            flash(
+                "Your new password must contain at least 8 characters.",
+                "error"
+            )
+            return redirect(url_for("vendor_reset_password", token=token))
+
+        if password != confirm_password:
+            connection.close()
+            flash("Your passwords do not match.", "error")
+            return redirect(url_for("vendor_reset_password", token=token))
+
+        hashed_password = generate_password_hash(password)
+        used_at = datetime.now(timezone.utc).isoformat()
+
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+
+            # Recheck inside the transaction so a token cannot be reused.
+            current_token = connection.execute("""
+                SELECT id, vendor_id
+                FROM password_reset_tokens
+                WHERE token_hash = ?
+                  AND used_at IS NULL
+                  AND expires_at > ?
+            """, (token_hash, used_at)).fetchone()
+
+            if current_token is None:
+                connection.rollback()
+                connection.close()
+                flash(
+                    "This password reset link is invalid, expired, or already used.",
+                    "error"
+                )
+                return redirect(url_for("vendor_forgot_password"))
+
+            connection.execute("""
+                UPDATE vendors
+                SET password = ?
+                WHERE id = ?
+            """, (hashed_password, current_token["vendor_id"]))
+
+            connection.execute("""
+                UPDATE password_reset_tokens
+                SET used_at = ?
+                WHERE id = ?
+            """, (used_at, current_token["id"]))
+
+            # Invalidate any other outstanding links for this vendor.
+            connection.execute("""
+                UPDATE password_reset_tokens
+                SET used_at = ?
+                WHERE vendor_id = ?
+                  AND used_at IS NULL
+            """, (used_at, current_token["vendor_id"]))
+
+            connection.commit()
+
+        except sqlite3.Error:
+            connection.rollback()
+            connection.close()
+            flash(
+                "Something went wrong. Please request a new reset link.",
+                "error"
+            )
+            return redirect(url_for("vendor_forgot_password"))
+
+        connection.close()
+        flash("Your password has been reset. You can now log in.", "success")
+        return redirect(url_for("vendor_login"))
+
+    connection.close()
+    return render_template("vendor_reset_password.html", token=token)
 
 
 # =====================================
@@ -607,6 +806,31 @@ def reservation_confirmation(reservation_id):
     return render_template(
         "reservation_confirmation.html",
         reservation=reservation
+    )
+
+
+# =====================================
+# VENDOR FOOD LISTINGS
+# =====================================
+
+@app.route("/vendor/listings")
+@vendor_login_required
+def vendor_listings():
+
+    connection = get_db_connection()
+
+    listings = connection.execute("""
+        SELECT *
+        FROM food_listings
+        WHERE vendor_id = ?
+        ORDER BY id DESC
+    """, (session["vendor_id"],)).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "vendor_listings.html",
+        listings=listings
     )
 
 

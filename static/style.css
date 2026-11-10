@@ -1,14 +1,13 @@
-```css
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --green: #246b45;
-    --dark-green: #16452e;
-    --light-green: #eaf4e9;
-    --cream: #fbfaf5;
-    --text: #202820;
-    --muted: #667166;
-    --white: #ffffff;
+    --green: #737A3B;
+    --dark-green: #6F4E37;
+    --light-green: #E8E9D8;
+    --cream: #F5F0E6;
+    --text: #3E3026;
+    --muted: #76695D;
+    --white: #FFFDF7;
 }
 
 * {
@@ -90,7 +89,7 @@ a {
     align-items: center;
     gap: 60px;
     padding: 95px 8% 110px;
-    background: linear-gradient(135deg, #fbfaf5 45%, #edf4e9);
+    background: linear-gradient(135deg, #F5F0E6 45%, #E8E9D8);
 }
 
 .eyebrow {
@@ -129,7 +128,7 @@ a {
 
 .secondary-button {
     display: inline-block;
-    border: 1px solid #cdd8cb;
+    border: 1px solid #D8CFBF;
     padding: 12px 22px;
     border-radius: 8px;
     font-weight: 700;
@@ -148,7 +147,7 @@ a {
 .hero-visual {
     min-height: 350px;
     border-radius: 24px;
-    background: #dcebd9;
+    background: #E8E9D8;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -277,7 +276,7 @@ a {
 .mission-section p {
     max-width: 650px;
     margin: 0 auto 30px;
-    color: #d7e5d9;
+    color: #F5F0E6;
 }
 
 footer {
@@ -366,7 +365,7 @@ footer .logo {
 .marketplace-hero {
     padding: 75px 8%;
     text-align: center;
-    background: linear-gradient(135deg, #fbfaf5, #eaf4e9);
+    background: linear-gradient(135deg, #F5F0E6, #E8E9D8);
 }
 
 .marketplace-hero .eyebrow {
@@ -435,7 +434,7 @@ footer .logo {
 .search-form select {
     min-width: 0;
     padding: 14px;
-    border: 1px solid #dce3d8;
+    border: 1px solid #D8CFBF;
     border-radius: 8px;
     background: white;
     font: inherit;
@@ -462,7 +461,7 @@ footer .logo {
     justify-content: center;
     align-items: center;
     padding: 12px 15px;
-    border: 1px solid #dce3d8;
+    border: 1px solid #D8CFBF;
     border-radius: 8px;
     font-weight: 600;
 }
@@ -480,7 +479,7 @@ footer .logo {
 .market-food-card {
     overflow: hidden;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 15px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -496,7 +495,7 @@ footer .logo {
     justify-content: center;
     align-items: center;
     position: relative;
-    background: #eaf4e9;
+    background: #E8E9D8;
 }
 
 .food-emoji {
@@ -584,8 +583,8 @@ footer .logo {
     padding: 12px;
     border: none;
     border-radius: 8px;
-    background: #e8ece6;
-    color: #687168;
+    background: #E8E9D8;
+    color: #6F6256;
     font: inherit;
     font-weight: 700;
     cursor: not-allowed;
@@ -595,7 +594,7 @@ footer .logo {
     padding: 70px 20px;
     text-align: center;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 15px;
 }
 
@@ -662,7 +661,7 @@ footer .logo {
 .form-hero {
     padding: 65px 8%;
     text-align: center;
-    background: linear-gradient(135deg, #fbfaf5, #eaf4e9);
+    background: linear-gradient(135deg, #F5F0E6, #E8E9D8);
 }
 
 .form-hero h1 {
@@ -684,7 +683,7 @@ footer .logo {
     margin: 60px auto;
     padding: 40px;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(25, 65, 35, 0.06);
 }
@@ -718,7 +717,7 @@ footer .logo {
 .form-group textarea {
     width: 100%;
     padding: 14px;
-    border: 1px solid #dce3d8;
+    border: 1px solid #D8CFBF;
     border-radius: 8px;
     background: white;
     font: inherit;
@@ -727,7 +726,7 @@ footer .logo {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    outline: 2px solid #b5d7bd;
+    outline: 2px solid #A7AD78;
     border-color: var(--green);
 }
 
@@ -764,8 +763,8 @@ footer .logo {
 }
 
 .form-alert.success {
-    background: #eaf4e9;
-    color: #16452e;
+    background: #E8E9D8;
+    color: #6F4E37;
 }
 
 .form-alert.error {
@@ -879,7 +878,7 @@ footer .logo {
 .reservation-receipt {
     padding: 30px;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 15px;
     text-align: left;
     box-shadow: 0 15px 40px rgba(25, 65, 35, 0.06);
@@ -939,7 +938,7 @@ footer .logo {
 .receipt-total {
     grid-column: 1 / -1;
     padding-top: 20px;
-    border-top: 1px solid #e9eee6;
+    border-top: 1px solid #E3DDCF;
 }
 
 .receipt-total strong {
@@ -1019,7 +1018,7 @@ footer .logo {
     width: 100%;
     overflow-x: auto;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(25, 65, 35, 0.05);
 }
@@ -1034,7 +1033,7 @@ footer .logo {
 .reservation-table td {
     padding: 18px 15px;
     text-align: left;
-    border-bottom: 1px solid #e9eee6;
+    border-bottom: 1px solid #E3DDCF;
 }
 
 .reservation-table th {
@@ -1055,7 +1054,7 @@ footer .logo {
 }
 
 .reservation-table tbody tr:hover {
-    background: #fbfcf9;
+    background: #F5F0E6;
 }
 
 .reservation-table tbody tr:last-child td {
@@ -1070,7 +1069,7 @@ footer .logo {
 
 .status-form select {
     padding: 9px;
-    border: 1px solid #dce5da;
+    border: 1px solid #D8CFBF;
     border-radius: 6px;
     background: white;
 }
@@ -1093,7 +1092,7 @@ footer .logo {
     padding: 60px 20px;
     text-align: center;
     background: white;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 12px;
 }
 
@@ -1144,7 +1143,7 @@ footer .logo {
 .status-form select {
     min-width: 110px;
     padding: 10px;
-    border: 1px solid #dce5da;
+    border: 1px solid #D8CFBF;
     border-radius: 6px;
     background: white;
     color: var(--text);
@@ -1178,7 +1177,7 @@ footer .logo {
 .auth-card {
     background: white;
     padding: 40px;
-    border: 1px solid #e9eee6;
+    border: 1px solid #E3DDCF;
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(25, 65, 35, 0.06);
 }
@@ -1212,7 +1211,7 @@ footer .logo {
 .auth-card input {
     width: 100%;
     padding: 14px;
-    border: 1px solid #dce5da;
+    border: 1px solid #D8CFBF;
     border-radius: 7px;
     font-size: 1rem;
     box-sizing: border-box;
@@ -1266,4 +1265,68 @@ footer .logo {
 
 .logout-button:hover {
     background: #962d22 !important;
+}
+
+/* =========================
+   WASTELESS MILK, COFFEE & OLIVE THEME
+   Shared navigation and common component overrides
+========================= */
+
+.navbar {
+    background: var(--dark-green);
+}
+
+.navbar .logo,
+.navbar .nav-links a,
+.navbar nav a {
+    color: var(--cream);
+}
+
+.navbar .nav-links a:hover,
+.navbar nav a:hover {
+    color: #D9DDBB;
+}
+
+.navbar .nav-button {
+    background: var(--green);
+    color: var(--white);
+}
+
+.navbar .nav-button:hover {
+    background: #59602F;
+}
+
+.food-card,
+.step-card,
+.market-food-card,
+.form-container,
+.auth-card,
+.table-wrapper,
+.empty-state,
+.empty-reservations,
+.reservation-receipt {
+    background: var(--white);
+}
+
+button,
+.primary-button,
+.submit-listing-button,
+.auth-button,
+.status-form button {
+    background-color: var(--green);
+}
+
+button:hover,
+.primary-button:hover,
+.submit-listing-button:hover,
+.auth-button:hover,
+.status-form button:hover {
+    background-color: #59602F;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--green);
+    outline-color: #A7AD78;
 }

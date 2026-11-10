@@ -810,6 +810,89 @@ def reservation_confirmation(reservation_id):
 
 
 # =====================================
+# CHANGE VENDOR PASSWORD
+# =====================================
+
+@app.route("/vendor/change-password", methods=["GET", "POST"])
+@vendor_login_required
+def change_vendor_password():
+
+    if request.method == "POST":
+
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        connection = get_db_connection()
+
+        vendor = connection.execute("""
+            SELECT password
+            FROM vendors
+            WHERE id = ?
+        """, (session["vendor_id"],)).fetchone()
+
+        if vendor is None:
+            connection.close()
+            session.clear()
+            flash("Your account could not be found. Please log in again.", "error")
+            return redirect(url_for("vendor_login"))
+
+        if not check_password_hash(vendor["password"], current_password):
+            connection.close()
+            flash("Your current password is incorrect.", "error")
+            return redirect(url_for("change_vendor_password"))
+
+        if len(new_password) < 8:
+            connection.close()
+            flash("Your new password must contain at least 8 characters.", "error")
+            return redirect(url_for("change_vendor_password"))
+
+        if new_password != confirm_password:
+            connection.close()
+            flash("Your new passwords do not match.", "error")
+            return redirect(url_for("change_vendor_password"))
+
+        if current_password == new_password:
+            connection.close()
+            flash("Your new password must be different from your current password.", "error")
+            return redirect(url_for("change_vendor_password"))
+
+        hashed_password = generate_password_hash(new_password)
+        changed_at = datetime.now(timezone.utc).isoformat()
+
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+
+            connection.execute("""
+                UPDATE vendors
+                SET password = ?
+                WHERE id = ?
+            """, (hashed_password, session["vendor_id"]))
+
+            # Invalidate any unused password-reset links for this vendor.
+            connection.execute("""
+                UPDATE password_reset_tokens
+                SET used_at = ?
+                WHERE vendor_id = ?
+                  AND used_at IS NULL
+            """, (changed_at, session["vendor_id"]))
+
+            connection.commit()
+
+        except sqlite3.Error:
+            connection.rollback()
+            connection.close()
+            flash("Unable to update your password. Please try again.", "error")
+            return redirect(url_for("change_vendor_password"))
+
+        connection.close()
+        flash("Your password has been changed successfully!", "success")
+        return redirect(url_for("vendor_reservations"))
+
+    return render_template("vendor_change_password.html")
+
+
+# =====================================
 # VENDOR FOOD LISTINGS
 # =====================================
 

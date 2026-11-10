@@ -3,54 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendor Reservations | WasteLess</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Reservation Dashboard | WasteLess</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f8f5;
+            color: #333;
+        }
+
+        .navbar {
+            background: #246b45;
+            padding: 18px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #c9f5d8;
+            text-decoration: underline;
+        }
+
+        .dashboard-container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 45px auto;
+        }
+
+        .dashboard-heading {
+            margin-bottom: 25px;
+        }
+
+        .dashboard-heading h1 {
+            color: #246b45;
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        .dashboard-heading p {
+            color: #666;
+        }
+
+        .flash-message {
+            padding: 14px;
+            margin-bottom: 15px;
+            border-radius: 7px;
+        }
+
+        .flash-message.success {
+            background: #e2f5e8;
+            color: #205c38;
+        }
+
+        .flash-message.error {
+            background: #fde8e8;
+            color: #a32626;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #eaf4ed;
+            color: #246b45;
+        }
+
+        .status-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .status-form select {
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .status-form button {
+            padding: 9px 13px;
+            border: none;
+            border-radius: 5px;
+            background: #246b45;
+            color: white;
+            cursor: pointer;
+        }
+
+        .status-form button:hover {
+            background: #194d32;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 55px 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .empty-state h2 {
+            color: #246b45;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #666;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .dashboard-heading h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <nav class="navbar">
-        <a href="{{ url_for('home') }}" class="logo">WasteLess.</a>
+
+        <a href="{{ url_for('home') }}" class="logo">
+            WasteLess.
+        </a>
 
         <div class="nav-links">
+
             <a href="{{ url_for('home') }}">Home</a>
+
             <a href="{{ url_for('marketplace') }}">Marketplace</a>
+
             <a href="{{ url_for('add_food') }}">List Surplus Food</a>
+
             <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
+
+            <a href="{{ url_for('vendor_listings') }}">My Listings</a>
+
+            <a href="{{ url_for('change_vendor_password') }}">Account Settings</a>
+
+            <a href="{{ url_for('vendor_logout') }}">Logout</a>
+
         </div>
+
     </nav>
 
-    <!-- Dashboard -->
-    <section class="vendor-dashboard">
+
+    <main class="dashboard-container">
 
         <div class="dashboard-heading">
-            <p class="section-label">VENDOR DASHBOARD</p>
-            <h1>Food <span>Reservations</span></h1>
-            <p>Keep track of customers who have reserved your surplus food.</p>
+
+            <h1>Reservation Dashboard</h1>
+
+            <p>
+                Manage customer reservations for your food listings.
+            </p>
+
         </div>
 
-        <!-- Flash Messages -->
+
         {% with messages = get_flashed_messages(with_categories=true) %}
+
             {% if messages %}
+
                 {% for category, message in messages %}
+
                     <div class="flash-message {{ category }}">
                         {{ message }}
                     </div>
+
                 {% endfor %}
+
             {% endif %}
+
         {% endwith %}
+
 
         {% if reservations %}
 
-            <div class="reservation-table-wrapper">
-                <table class="reservation-table">
+            <div class="table-wrapper">
+
+                <table>
 
                     <thead>
                         <tr>
-                            <th>Reservation</th>
+                            <th>Reservation ID</th>
                             <th>Customer</th>
-                            <th>Food</th>
+                            <th>Phone</th>
+                            <th>Food Item</th>
                             <th>Quantity</th>
                             <th>Total</th>
                             <th>Status</th>
@@ -59,86 +252,88 @@
                     </thead>
 
                     <tbody>
-                        {% for reservation in reservations %}
-                            <tr>
-                                <td>
-                                    WL-{{ "%05d"|format(reservation.id) }}
-                                </td>
 
-                                <td>
-                                    <strong>{{ reservation.customer_name }}</strong>
-                                    <small>{{ reservation.phone_number }}</small>
-                                </td>
+                        {% for reservation in reservations %}
+
+                            <tr>
+
+                                <td>#WL{{ reservation.id }}</td>
+
+                                <td>{{ reservation.customer_name }}</td>
+
+                                <td>{{ reservation.phone_number }}</td>
 
                                 <td>{{ reservation.food_name }}</td>
 
                                 <td>{{ reservation.quantity }}</td>
 
                                 <td>
-                                    ₦{{ "%.2f"|format(reservation.total_price) }}
+                                    ₦{{ "{:,.2f}".format(reservation.total_price) }}
                                 </td>
 
+                                <td>{{ reservation.status }}</td>
+
                                 <td>
-                                    <span class="reservation-status">
-                                        {{ reservation.status }}
-                                    </span>
+
+                                    <form
+                                        class="status-form"
+                                        method="POST"
+                                        action="{{ url_for('update_reservation', reservation_id=reservation.id) }}"
+                                    >
+
+                                        <select name="status" required>
+
+                                            <option value="Pending"
+                                                {% if reservation.status == 'Pending' %}selected{% endif %}>
+                                                Pending
+                                            </option>
+
+                                            <option value="Confirmed"
+                                                {% if reservation.status == 'Confirmed' %}selected{% endif %}>
+                                                Confirmed
+                                            </option>
+
+                                            <option value="Collected"
+                                                {% if reservation.status == 'Collected' %}selected{% endif %}>
+                                                Collected
+                                            </option>
+
+                                        </select>
+
+                                        <button type="submit">
+                                            Save
+                                        </button>
+
+                                    </form>
+
                                 </td>
 
-                                <td>
-    <form
-        action="{{ url_for('update_reservation', reservation_id=reservation.id) }}"
-        method="POST"
-    >
-        <select name="status" required
-                style="padding: 10px; margin-right: 8px;">
-            <option value="Pending"
-                {% if reservation.status == 'Pending' %}selected{% endif %}>
-                Pending
-            </option>
-
-            <option value="Confirmed"
-                {% if reservation.status == 'Confirmed' %}selected{% endif %}>
-                Confirmed
-            </option>
-
-            <option value="Collected"
-                {% if reservation.status == 'Collected' %}selected{% endif %}>
-                Collected
-            </option>
-        </select>
-
-        <button type="submit"
-                style="display: inline-block !important;
-                       background: #246b45 !important;
-                       color: white !important;
-                       padding: 10px 15px !important;
-                       border: none !important;
-                       border-radius: 6px !important;
-                       cursor: pointer !important;">
-            Update
-        </button>
-    </form>
-</td>
                             </tr>
+
                         {% endfor %}
+
                     </tbody>
 
                 </table>
+
             </div>
 
         {% else %}
 
-            <div class="empty-reservations">
+            <div class="empty-state">
+
                 <h2>No reservations yet</h2>
-                <p>When customers reserve food, their details will appear here.</p>
-                <a href="{{ url_for('marketplace') }}" class="primary-button">
-                    View Marketplace
-                </a>
+
+                <p>
+                    When customers reserve food from your listings,
+                    their reservations will appear here.
+                </p>
+
             </div>
 
         {% endif %}
 
-    </section>
+    </main>
 
 </body>
 </html>

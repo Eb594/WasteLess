@@ -7,15 +7,11 @@
 
     <title>Food Marketplace | WasteLess</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <!-- Navigation -->
     <header class="navbar">
 
         <a href="/" class="logo">WasteLess<span>.</span></a>
@@ -24,14 +20,17 @@
             <a href="/">Home</a>
             <a href="/marketplace">Marketplace</a>
             <a href="/add-food" class="nav-button">List Surplus Food</a>
-            <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
+            {% if session.get('vendor_id') %}
+                <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
+            {% else %}
+                <a href="{{ url_for('vendor_login') }}">Vendor Login</a>
+            {% endif %}
         </nav>
 
     </header>
 
     <main>
 
-        <!-- Marketplace Hero -->
         <section class="marketplace-hero">
 
             <p class="eyebrow">GOOD FOOD. BETTER PRICES.</p>
@@ -48,8 +47,6 @@
 
         </section>
 
-
-        <!-- Marketplace Listings -->
         <section class="marketplace-container">
 
             <div class="marketplace-heading">
@@ -68,8 +65,6 @@
 
             </div>
 
-
-            <!-- Search and Filter Form -->
             <form
                 action="{{ url_for('marketplace') }}"
                 method="GET"
@@ -84,59 +79,46 @@
                     aria-label="Search food or location"
                 >
 
-                <!-- Category Filter -->
                 <select name="category" aria-label="Filter by category">
 
                     <option value="">All Categories</option>
 
                     {% for category in categories %}
-
                         <option
                             value="{{ category }}"
                             {% if selected_category == category %}selected{% endif %}
                         >
                             {{ category }}
                         </option>
-
                     {% endfor %}
 
                 </select>
 
-
-                <!-- Location Filter -->
                 <select name="location" aria-label="Filter by location">
 
                     <option value="">All Locations</option>
 
                     {% for location in locations %}
-
                         <option
                             value="{{ location }}"
                             {% if selected_location == location %}selected{% endif %}
                         >
                             {{ location }}
                         </option>
-
                     {% endfor %}
 
                 </select>
-
 
                 <button type="submit" class="primary-button">
                     Search
                 </button>
 
-                <a
-                    href="{{ url_for('marketplace') }}"
-                    class="reset-button"
-                >
+                <a href="{{ url_for('marketplace') }}" class="reset-button">
                     Reset
                 </a>
 
             </form>
 
-
-            <!-- Food Listings -->
             {% if food_listings %}
 
                 <div class="food-grid">
@@ -145,12 +127,25 @@
 
                         <article class="market-food-card">
 
-                            <!-- Food Image -->
+                            <!-- FOOD PHOTOGRAPH -->
                             <div class="market-food-image">
 
-                                <span class="food-emoji">
-                                    {{ food.emoji }}
-                                </span>
+                                {% if food.image_filename %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' + food.image_filename) }}"
+                                        alt="{{ food.name }}"
+                                        class="food-card-photo"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <span class="food-emoji">
+                                        {{ food.emoji }}
+                                    </span>
+
+                                {% endif %}
 
                                 <span class="discount-badge">
                                     {{ food.discount_percentage }}% OFF
@@ -158,8 +153,6 @@
 
                             </div>
 
-
-                            <!-- Food Details -->
                             <div class="market-food-content">
 
                                 <span class="category-label">
@@ -172,8 +165,6 @@
                                     {{ food.description }}
                                 </p>
 
-
-                                <!-- Prices -->
                                 <div class="price-row">
 
                                     <span class="market-old-price">
@@ -186,19 +177,14 @@
 
                                 </div>
 
-
                                 <p class="saving-message">
                                     You save
                                     ₦{{ "{:,.2f}".format(food.original_price - food.discounted_price) }}
                                 </p>
 
-
-                                <!-- Food Information -->
                                 <div class="food-meta">
 
-                                    <p>
-                                        📍 {{ food.location }}
-                                    </p>
+                                    <p>📍 {{ food.location }}</p>
 
                                     <p>
                                         🕒 Collect before {{ food.collection_deadline }}
@@ -210,14 +196,13 @@
 
                                 </div>
 
-
-                                <!-- Reservation Button -->
                                 <a
-    href="{{ url_for('reserve_food', food_id=food.id) }}"
-    class="reserve-button"
->
-    Reserve Food
-</a>
+                                    href="{{ url_for('reserve_food', food_id=food.id) }}"
+                                    class="reserve-button"
+                                >
+                                    Reserve Food
+                                </a>
+
                             </div>
 
                         </article>
@@ -228,7 +213,6 @@
 
             {% else %}
 
-                <!-- Empty State -->
                 <div class="empty-state">
 
                     <h3>No food found</h3>
@@ -250,8 +234,6 @@
 
     </main>
 
-
-    <!-- Footer -->
     <footer class="footer">
 
         <div class="footer-content">
@@ -273,5 +255,4 @@
     </footer>
 
 </body>
-
 </html>

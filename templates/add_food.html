@@ -7,10 +7,7 @@
 
     <title>List Surplus Food | WasteLess</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
@@ -55,7 +52,11 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="{{ url_for('add_food') }}">
+            <form
+                method="POST"
+                action="{{ url_for('add_food') }}"
+                enctype="multipart/form-data"
+            >
 
                 <div class="form-group">
                     <label for="name">Food Name</label>
@@ -74,12 +75,8 @@
                     <select id="category" name="category" required>
                         <option value="">Select a category</option>
                         <option value="Bakery">Bakery</option>
-                        <option value="Fruits & Vegetables">
-                            Fruits & Vegetables
-                        </option>
-                        <option value="Prepared Meals">
-                            Prepared Meals
-                        </option>
+                        <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                        <option value="Prepared Meals">Prepared Meals</option>
                         <option value="Dairy">Dairy</option>
                         <option value="Snacks">Snacks</option>
                         <option value="Other">Other</option>
@@ -98,12 +95,41 @@
                     ></textarea>
                 </div>
 
+                <!-- FOOD IMAGE UPLOAD -->
+                <div class="form-group image-upload-group">
+
+                    <label for="food_image">Upload Food Photograph</label>
+
+                    <p class="upload-description">
+                        Choose a clear photograph of the food you are listing.
+                    </p>
+
+                    <input
+                        type="file"
+                        id="food_image"
+                        name="food_image"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    >
+
+                    <small>
+                        Accepted formats: JPG, JPEG, PNG and WEBP.
+                        Maximum size: 5 MB.
+                    </small>
+
+                    <div class="image-preview-container" id="preview-container" hidden>
+                        <img
+                            id="image-preview"
+                            src=""
+                            alt="Selected food photograph preview"
+                        >
+                    </div>
+
+                </div>
+
                 <div class="form-row">
 
                     <div class="form-group">
-                        <label for="original_price">
-                            Original Price (₦)
-                        </label>
+                        <label for="original_price">Original Price (₦)</label>
 
                         <input
                             type="number"
@@ -117,9 +143,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="discounted_price">
-                            Discounted Price (₦)
-                        </label>
+                        <label for="discounted_price">Discounted Price (₦)</label>
 
                         <input
                             type="number"
@@ -161,9 +185,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="collection_deadline">
-                        Collection Deadline
-                    </label>
+                    <label for="collection_deadline">Collection Deadline</label>
 
                     <input
                         type="text"
@@ -194,6 +216,38 @@
         </p>
     </footer>
 
-</body>
+    <script>
+        const imageInput = document.getElementById("food_image");
+        const preview = document.getElementById("image-preview");
+        const previewContainer = document.getElementById("preview-container");
 
+        imageInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+                previewContainer.hidden = true;
+                preview.removeAttribute("src");
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Please select an image smaller than 5 MB.");
+                this.value = "";
+                previewContainer.hidden = true;
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                previewContainer.hidden = false;
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+
+</body>
 </html>

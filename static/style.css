@@ -1330,3 +1330,84 @@ textarea:focus {
     border-color: var(--green);
     outline-color: #A7AD78;
 }
+
+/* =====================================
+   WASTELESS FOOD IMAGE UPLOADS
+===================================== */
+
+.image-upload-group {
+    margin-bottom: 25px;
+}
+
+.upload-description {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.image-upload-group input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px dashed #737A3B;
+    border-radius: 10px;
+    background: #FFFDF7;
+    cursor: pointer;
+}
+
+.image-upload-group small {
+    display: block;
+    margin-top: 8px;
+    color: #6F4E37;
+}
+
+.image-preview-container {
+    margin-top: 15px;
+}
+
+.image-preview-container img {
+    width: 100%;
+    max-width: 350px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Marketplace food photographs */
+
+.market-food-image {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    background: #E8E9D8;
+}
+
+.food-card-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.food-emoji {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 65px;
+}
+
+/* Vendor dashboard photographs */
+
+.vendor-food-image {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.vendor-listing-photo {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}

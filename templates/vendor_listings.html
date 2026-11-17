@@ -1,108 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+\<!DOCTYPE html>
 
-    <title>My Food Listings | WasteLess</title>
+\<html lang="en">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+\<head>     \<meta charset="UTF-8">     \<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<body>
+```
+<title>My Food Listings | WasteLess</title>
 
-    <header class="navbar">
-        <a href="/" class="logo">WasteLess<span>.</span></a>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+```
 
-        <nav>
-            <a href="/marketplace">Marketplace</a>
-            <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
-            <a href="{{ url_for('add_food') }}">Add Food</a>
-            <a href="{{ url_for('vendor_logout') }}" class="nav-button">
-                Logout
-            </a>
-        </nav>
-    </header>
+\</head>
 
-    <main class="dashboard-container">
+\<body>
 
-        <h1>My Food Listings</h1>
+```
+<header class="navbar">
 
-        <p>Manage the surplus food you have added to WasteLess.</p>
+    <a href="/" class="logo">WasteLess<span>.</span></a>
 
-        <a href="{{ url_for('add_food') }}" class="primary-button">
-            + Add New Food
+    <nav>
+        <a href="/marketplace">Marketplace</a>
+        <a href="{{ url_for('vendor_reservations') }}">Reservations</a>
+        <a href="{{ url_for('add_food') }}">Add Food</a>
+        <a href="{{ url_for('vendor_logout') }}" class="nav-button">
+            Logout
         </a>
+    </nav>
 
-        {% if listings %}
+</header>
 
-            <div class="steps">
+<main class="dashboard-container">
 
-                {% for food in listings %}
+    <h1>My Food Listings</h1>
 
-                    <article class="step-card">
+    <p>Manage the surplus food you have added to WasteLess.</p>
 
-                        <div class="step-icon">
-                            {{ food["emoji"] }}
-                        </div>
+    <a href="{{ url_for('add_food') }}" class="primary-button">
+        + Add New Food
+    </a>
 
-                        <h3>{{ food["name"] }}</h3>
+    {% if listings %}
 
-                        <p>{{ food["description"] }}</p>
+        <div class="steps">
 
-                        <p>
-                            <strong>Category:</strong>
-                            {{ food["category"] }}
-                        </p>
+            {% for food in listings %}
 
-                        <p>
-                            <strong>Original Price:</strong>
-                            ₦{{ "{:,.2f}".format(food["original_price"]) }}
-                        </p>
+                <article class="step-card">
 
-                        <p>
-                            <strong>Discounted Price:</strong>
-                            ₦{{ "{:,.2f}".format(food["discounted_price"]) }}
-                        </p>
+                    <div class="vendor-food-image">
 
-                        <p>
-                            <strong>Available Quantity:</strong>
-                            {{ food["quantity"] }}
-                        </p>
+                        {% if food["image_filename"] %}
 
-                        <p>
-                            <strong>Location:</strong>
-                            {{ food["location"] }}
-                        </p>
+                            <img
+                                src="{{ url_for('static', filename='uploads/' + food['image_filename']) }}"
+                                alt="{{ food['name'] }}"
+                                class="vendor-listing-photo"
+                                loading="lazy"
+                            >
 
-                        <p>
-                            <strong>Collection Deadline:</strong>
-                            {{ food["collection_deadline"] }}
-                        </p>
+                        {% else %}
 
-                    </article>
+                            <div class="step-icon">
+                                {{ food["emoji"] }}
+                            </div>
 
-                {% endfor %}
+                        {% endif %}
 
-            </div>
+                    </div>
 
-        {% else %}
+                    <h3>{{ food["name"] }}</h3>
 
-            <div class="step-card">
-                <h3>You haven't added any food yet.</h3>
+                    <p>{{ food["description"] }}</p>
 
-                <p>
-                    Start reducing food waste by adding your first food listing.
-                </p>
+                    <p>
+                        <strong>Category:</strong>
+                        {{ food["category"] }}
+                    </p>
 
-                <a href="{{ url_for('add_food') }}" class="primary-button">
-                    Add Your First Listing
-                </a>
-            </div>
+                    <p>
+                        <strong>Original Price:</strong>
+                        ₦{{ "{:,.2f}".format(food["original_price"]) }}
+                    </p>
 
-        {% endif %}
+                    <p>
+                        <strong>Discounted Price:</strong>
+                        ₦{{ "{:,.2f}".format(food["discounted_price"]) }}
+                    </p>
 
-    </main>
+                    <p>
+                        <strong>Available Quantity:</strong>
+                        {{ food["quantity"] }}
+                    </p>
 
-</body>
-</html>
+                    <p>
+                        <strong>Location:</strong>
+                        {{ food["location"] }}
+                    </p>
+
+                    <p>
+                        <strong>Collection Deadline:</strong>
+                        {{ food["collection_deadline"] }}
+                    </p>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="step-card">
+
+            <h3>You haven't added any food yet.</h3>
+
+            <p>
+                Start reducing food waste by adding your first food listing.
+            </p>
+
+            <a href="{{ url_for('add_food') }}" class="primary-button">
+                Add Your First Listing
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</main>
+```
+
+\</body>
+\</html>

@@ -6,6 +6,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from functools import wraps
 
+from werkzeug.utils import secure_filename
+
 from flask import (
     Flask,
     render_template,
@@ -25,7 +27,27 @@ from werkzeug.security import (
 app = Flask(__name__)
 app.secret_key = "wasteless-development-key"
 
-DATABASE = Path(__file__).parent / "wasteless.db"
+BASE_DIR = Path(__file__).parent
+DATABASE = BASE_DIR / "wasteless.db"
+UPLOAD_FOLDER = BASE_DIR / "static" / "uploads"
+ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB per upload
+
+
+def allowed_image_file(filename):
+    """Return True only for supported image filename extensions."""
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+    )
+
+
+@app.errorhandler(413)
+def upload_too_large(error):
+    flash("The image is too large. Please choose an image smaller than 5 MB.", "error")
+    return redirect(url_for("add_food"))
 
 
 # =====================================
@@ -62,6 +84,7 @@ def vendor_login_required(route_function):
 
 def initialize_database():
 
+    UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
     connection = get_db_connection()
 
     connection.execute("""
@@ -94,6 +117,13 @@ def initialize_database():
     ).fetchall()
 
     column_names = [column["name"] for column in columns]
+
+    # Add the image column safely to existing databases.
+    if "image_filename" not in column_names:
+        connection.execute("""
+            ALTER TABLE food_listings
+            ADD COLUMN image_filename TEXT
+        """)
 
     if "vendor_id" not in column_names:
         connection.execute("""
@@ -592,7 +622,6 @@ def add_food():
         ).strip()
 
         try:
-
             original_price = float(request.form.get("original_price", ""))
             discounted_price = float(
                 request.form.get("discounted_price", "")
@@ -620,6 +649,25 @@ def add_food():
             flash(str(error), "error")
             return redirect(url_for("add_food"))
 
+        image = request.files.get("food_image")
+        image_filename = None
+
+        if image and image.filename:
+            cleaned_filename = secure_filename(image.filename)
+
+            if not cleaned_filename or not allowed_image_file(cleaned_filename):
+                flash(
+                    "Please upload a JPG, JPEG, PNG or WEBP image.",
+                    "error"
+                )
+                return redirect(url_for("add_food"))
+
+            extension = cleaned_filename.rsplit(".", 1)[1].lower()
+            image_filename = f"{secrets.token_hex(16)}.{extension}"
+
+            UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
+            image.save(UPLOAD_FOLDER / image_filename)
+
         food_emojis = {
             "Bakery": "🥖",
             "Fruits & Vegetables": "🥦",
@@ -630,29 +678,40 @@ def add_food():
         }
 
         emoji = food_emojis.get(category, "🍽️")
-
         connection = get_db_connection()
 
-        connection.execute("""
-            INSERT INTO food_listings (
+        try:
+            connection.execute("""
+                INSERT INTO food_listings (
+                    name, category, description,
+                    original_price, discounted_price,
+                    quantity, location, collection_deadline,
+                    emoji, vendor_id, image_filename
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
                 name, category, description,
                 original_price, discounted_price,
                 quantity, location, collection_deadline,
-                emoji, vendor_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            name, category, description,
-            original_price, discounted_price,
-            quantity, location, collection_deadline,
-            emoji, session["vendor_id"]
-        ))
+                emoji, session["vendor_id"], image_filename
+            ))
 
-        connection.commit()
-        connection.close()
+            connection.commit()
+
+        except sqlite3.Error:
+            connection.rollback()
+
+            # Do not leave an orphaned image if the database insert fails.
+            if image_filename:
+                (UPLOAD_FOLDER / image_filename).unlink(missing_ok=True)
+
+            flash("We couldn't save your listing. Please try again.", "error")
+            return redirect(url_for("add_food"))
+
+        finally:
+            connection.close()
 
         flash("Your food listing has been added successfully!", "success")
-
         return redirect(url_for("marketplace"))
 
     return render_template("add_food.html")
